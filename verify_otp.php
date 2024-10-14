@@ -62,7 +62,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             curl_close($ch);
 
             if ($httpCode == 201) {
+                // Register successful, now save to SQL
+                $pdo = new PDO('mysql:host=localhost;dbname=appid', 'root', '');
+                $stmt = $pdo->prepare('INSERT INTO users (username, app_id) VALUES (:username, :app_id)');
+                $appId = uniqid(); // Generate a unique app ID
+                $stmt->execute([
+                    ':username' => $userDetails['username'],
+                    ':app_id' => $appId
+                ]);
+
                 echo 'Registration successful and email verified.';
+
                 // Clear session and redirect to login
                 session_destroy();
                 header("Location: login.php");
