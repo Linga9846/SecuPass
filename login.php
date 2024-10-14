@@ -39,9 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo 'Authentication failed. HTTP Code: ' . $httpCode . ' Response: ' . htmlspecialchars($response);
             }
-        } elseif ($method == 'appid') {
-            $pdo = new PDO('mysql:host=localhost;dbname=appid', 'root', '');
-            $stmt = $pdo->prepare('SELECT app_id FROM users WHERE username = :username');
+        } elseif ($method == 'secureid') {
+            $pdo = new PDO('mysql:host=localhost;dbname=secureid', 'root', '');
+            $stmt = $pdo->prepare('SELECT secure_id FROM users WHERE username = :username');
             $stmt->execute([':username' => $username]);
             $user = $stmt->fetch();
 
@@ -74,49 +74,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           box-sizing: border-box;
       }
       body {
-          background-color: #080710;
+          background-image: url('./assets/login.png');
+          background-size: 1920px 1080px; 
+          background-position: 50% 50%;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
           display: flex;
           justify-content: center;
           align-items: center;
           height: 100vh;
-      }
-      .background {
-          width: 430px;
-          height: 520px;
-          position: absolute;
-          transform: translate(-50%, -50%);
-          left: 50%;
-          top: 50%;
-      }
-      .background .shape {
-          height: 200px;
-          width: 200px;
-          position: absolute;
-          border-radius: 50%;
-      }
-      .shape:first-child {
-          background: linear-gradient(#1845ad, #23a2f6);
-          left: -80px;
-          top: -80px;
-      }
-      .shape:last-child {
-          background: linear-gradient(to right, #ff512f, #f09819);
-          right: -30px;
-          bottom: -80px;
+          margin: 0;
       }
       form {
-          height: 520px;
-          width: 400px;
-          background-color: rgba(255, 255, 255, 0.13);
-          position: absolute;
-          transform: translate(-50%, -50%);
-          top: 50%;
-          left: 50%;
+          width: 340px;
+          background-color: rgba(255, 255, 255, 0.5);
           border-radius: 10px;
           backdrop-filter: blur(10px);
           border: 2px solid rgba(255, 255, 255, 0.1);
           box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-          padding: 50px 35px;
+          padding: 30px;
+          text-align: center;
       }
       form * {
           font-family: 'Poppins', sans-serif;
@@ -126,24 +103,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           border: none;
       }
       form h3 {
-          font-size: 32px;
+          font-size: 24px;
           font-weight: 500;
-          line-height: 42px;
+          line-height: 32px;
           text-align: center;
+          margin-bottom: 20px;
       }
       label {
           display: block;
-          margin-top: 30px;
+          margin-top: 20px;
           font-size: 16px;
           font-weight: 500;
+          text-align: left;
       }
       input {
           display: block;
           height: 50px;
           width: 100%;
-          background-color: rgba(255, 255, 255, 0.07);
-          border-radius: 3px;
-          padding: 0 10px;
+          background-color: rgba(255, 255, 255, 0.09);
+          border-radius: 5px;
+          padding: 0 15px;
           margin-top: 8px;
           font-size: 14px;
           font-weight: 300;
@@ -152,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           color: #e5e5e5;
       }
       button {
-          margin-top: 50px;
+          margin-top: 30px;
           width: 100%;
           background-color: #ffffff;
           color: #080710;
@@ -163,15 +142,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           cursor: pointer;
       }
       .method-selection {
-          margin-top: 30px;
+          margin-top: 20px;
           display: flex;
-          justify-content: space-between;
+          justify-content: space-around;
+          align-items: center;
       }
       .method-selection label {
           background-color: rgba(255, 255, 255, 0.27);
           border-radius: 5px;
-          padding: 10px;
+          padding: 10px 15px;
           cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
       }
       .method-selection input[type="radio"] {
           display: none;
@@ -181,13 +164,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
           border: 2px solid #4CAF50;
       }
+      .method-selection label span {
+          margin-left: 10px;
+      }
+      .login-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .login-link a {
+            color: #000000;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 1000;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div class="background">
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
     <form method="POST">
         <h3>Login Here</h3>
 
@@ -195,15 +190,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="username" placeholder="Email or Phone" id="username" required>
 
         <div class="method-selection">
-            <label><input type="radio" name="method" value="password" checked> Password</label>
-            <label><input type="radio" name="method" value="appid"> App ID</label>
+            <input type="radio" name="method" value="password" id="password-method" checked>
+            <label for="password-method"><span>Password</span></label>
+            
+            <input type="radio" name="method" value="secureid" id="secureid-method">
+            <label for="secureid-method"><span>Secure ID</span></label>
         </div>
+
         <div id="password-field">
             <label for="password">Password</label>
             <input type="password" name="password" placeholder="Password" id="password">
         </div>
-
+        
         <button type="submit">Log In</button>
+        <div class="login-link">
+            <p>Dont have an account? <a href="register.php">Register Now</a></p>
+        </div>
     </form>
 
     <script>

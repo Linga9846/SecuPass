@@ -61,17 +61,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $publicKey = sodium_crypto_box_publickey($keyPair);
                 $privateKey = sodium_crypto_box_secretkey($keyPair);
                 $nonce = random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES);
-                $appId = uniqid(); 
-                $encryptedAppId = sodium_crypto_box($appId, $nonce, $keyPair);
+                $secureId = uniqid(); 
+                $encryptedSecureId = sodium_crypto_box($secureId, $nonce, $keyPair);
 
 
                 try {
-                    $pdoEncrypted = new PDO('mysql:host=localhost;dbname=appid', 'root', '');
-                    $stmtEncrypted = $pdoEncrypted->prepare('INSERT INTO users (username, public_key, app_id, nonce) VALUES (:username, :public_key, :app_id, :nonce)');
+                    $pdoEncrypted = new PDO('mysql:host=localhost;dbname=secureid', 'root', '');
+                    $stmtEncrypted = $pdoEncrypted->prepare('INSERT INTO users (username, public_key, secure_id, nonce) VALUES (:username, :public_key, :secure_id, :nonce)');
                     $stmtEncrypted->execute([
                         ':username' => $userDetails['username'],
                         ':public_key' => base64_encode($publicKey),
-                        ':app_id' => base64_encode($encryptedAppId),
+                        ':secure_id' => base64_encode($encryptedSecureId),
                         ':nonce' => base64_encode($nonce)
                     ]);
 
@@ -109,39 +109,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           box-sizing: border-box;
       }
       body {
-          background-color: #080710;
+          background-image: url('./assets/register.png');
+          background-size: 1920px 1080px; 
+          background-position: 50% 50%;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
           display: flex;
           justify-content: center;
           align-items: center;
           height: 100vh;
-      }
-      .background {
-          width: 430px;
-          height: 620px;
-          position: absolute;
-          transform: translate(-50%, -50%);
-          left: 50%;
-          top: 50%;
-      }
-      .background .shape {
-          height: 200px;
-          width: 200px;
-          position: absolute;
-          border-radius: 50%;
+          margin: 0;
       }
       form {
-          height: 200px;
-          width: 300px;
-          background-color: rgba(255, 255, 255, 0.13);
-          position: absolute;
-          transform: translate(-50%, -50%);
-          top: 50%;
-          left: 50%;
+          width: 340px;
+          background-color: rgba(255, 255, 255, 0.5);
           border-radius: 10px;
           backdrop-filter: blur(10px);
           border: 2px solid rgba(255, 255, 255, 0.1);
           box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-          padding: 20px 35px;
+          padding: 30px;
           text-align: center;
       }
       form * {
@@ -151,20 +137,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           outline: none;
           border: none;
       }
-      form h2 {
+      form h3 {
           font-size: 24px;
           font-weight: 500;
           line-height: 32px;
+          text-align: center;
           margin-bottom: 20px;
+      }
+      label {
+          display: block;
+          margin-top: 20px;
+          font-size: 16px;
+          font-weight: 500;
           text-align: left;
       }
       input {
           display: block;
           height: 50px;
           width: 100%;
-          background-color: rgba(255, 255, 255, 0.07);
-          border-radius: 3px;
-          padding: 0 10px;
+          background-color: rgba(255, 255, 255, 0.09);
+          border-radius: 5px;
+          padding: 0 15px;
           margin-top: 8px;
           font-size: 14px;
           font-weight: 300;
@@ -173,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           color: #e5e5e5;
       }
       button {
-          margin-top: 20px;
+          margin-top: 30px;
           width: 100%;
           background-color: #ffffff;
           color: #080710;
@@ -183,7 +176,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           border-radius: 5px;
           cursor: pointer;
       }
+      .method-selection {
+          margin-top: 20px;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+      }
+      .method-selection label {
+          background-color: rgba(255, 255, 255, 0.27);
+          border-radius: 5px;
+          padding: 10px 15px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      .method-selection input[type="radio"] {
+          display: none;
+      }
+      .method-selection input[type="radio"]:checked + label {
+          background-color: rgba(255, 255, 255, 0.47);
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+          border: 2px solid #4CAF50;
+      }
+      .method-selection label span {
+          margin-left: 10px;
+      }
     </style>
+</head>
 </head>
 <body>
     <div class="background">
@@ -191,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="shape"></div>
     </div>
     <form method="POST">
-        <h2>Verify OTP</h2>r
+        <h2>Verify OTP</h2>
         <input type="text" name="otp" placeholder="OTP" required>
         <button type="submit">Verify OTP</button>
     </form>

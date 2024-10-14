@@ -6,7 +6,7 @@ if (isset($_SESSION['access_token'])) {
 } elseif (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
     try {
-        $pdo = new PDO('mysql:host=localhost;dbname=appid', 'root', '');
+        $pdo = new PDO('mysql:host=localhost;dbname=secureid', 'root', '');
         $stmt = $pdo->prepare('SELECT * FROM users WHERE username = :username');
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch();
@@ -45,7 +45,11 @@ if (!$authenticated) {
           box-sizing: border-box;
       }
       body {
-          background-color: #080710;
+          background-image: url('./assets/login.png');
+          background-size: 1920px 1080px; 
+          background-position: 50% 50%;
+          background-repeat: no-repeat; 
+          background-attachment: fixed; 
           display: flex;
           justify-content: center;
           align-items: center;
@@ -65,19 +69,9 @@ if (!$authenticated) {
           position: absolute;
           border-radius: 50%;
       }
-      .shape:first-child {
-          background: linear-gradient(#1845ad, #23a2f6);
-          left: -80px;
-          top: -80px;
-      }
-      .shape:last-child {
-          background: linear-gradient(to right, #ff512f, #f09819);
-          right: -30px;
-          bottom: -80px;
-      }
       .content {
           width: 300px;
-          background-color: rgba(255, 255, 255, 0.13);
+          background-color: rgba(255, 255, 255, 0.5);
           position: absolute;
           transform: translate(-50%, -50%);
           top: 50%;
